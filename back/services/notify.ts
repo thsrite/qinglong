@@ -329,7 +329,7 @@ export default class NotificationService {
 
   private async weWorkApp() {
     const { weWorkAppKey } = this.params;
-    const [corpid, corpsecret, touser, agentid, thumb_media_id = '1'] =
+    const [corpid, corpsecret, touser, agentid, thumb_media_id = '1', proxy_url] =
       weWorkAppKey.split(',');
     const url = `https://qyapi.weixin.qq.com/cgi-bin/gettoken`;
     const tokenRes: any = await got
@@ -381,9 +381,10 @@ export default class NotificationService {
     }
 
     try {
+      const msg_url = proxy_url != null ? (proxy_url + `/cgi-bin/message/send?access_token=${tokenRes.access_token}`) : `https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=${tokenRes.access_token}`;
       const res: any = await got
         .post(
-          `https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=${tokenRes.access_token}`,
+          msg_url,
           {
             ...this.gotOption,
             json: {
